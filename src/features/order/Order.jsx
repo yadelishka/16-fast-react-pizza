@@ -3,17 +3,21 @@ import { useFetcher, useLoaderData } from 'react-router-dom';
 
 import OrderItem from './OrderItem';
 
-import { getOrder } from '../../services/apiRestaurant';
+import { getOrder, updateOrder } from '../../services/apiRestaurant';
 import {
   calcMinutesLeft,
   formatCurrency,
   formatDate,
 } from '../../utils/helpers';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import UpdateOrder from './UpdateOrder';
+import Button from '../../ui/Button';
 
 function Order() {
   const order = useLoaderData();
+
+  const [isUpdatingNumber, setIsUpdatingNumber] = useState(false);
+  const [newNumber, setNewNumber] = useState('');
 
   const fetcher = useFetcher();
 
@@ -92,7 +96,31 @@ function Order() {
         </p>
       </div>
 
-      {!priority && <UpdateOrder order={order} />}
+      <div className="relative mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form>
+          {isUpdatingNumber && (
+            <input
+              className="input mr-3"
+              value={newNumber}
+              onChange={(e) => setNewNumber(e.target.value)}
+            ></input>
+          )}
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(isUpdatingNumber);
+              if (isUpdatingNumber === false) setIsUpdatingNumber(true);
+              if (isUpdatingNumber === true) {
+                updateOrder(id, { phone: newNumber });
+              }
+            }}
+          >
+            Update phonenumber
+          </Button>
+        </form>
+        {!priority && <UpdateOrder order={order} />}
+      </div>
     </div>
   );
 }
